@@ -17,7 +17,7 @@ namespace file_explorer::entity {
 TEST(DatabaseTest, SampleCase) {
   auto &db = Database::GetInstance();
 
-  db.LoadDb("");
+  db.LoadDb("./test/db.json");
   EXPECT_TRUE(db.IsLoaded());
 }
 }  // namespace file_explorer::entity
