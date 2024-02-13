@@ -12,8 +12,6 @@
 #ifndef SRC_FILE_EXPLORER_ENTITY_REPOSITORY_H_
 #define SRC_FILE_EXPLORER_ENTITY_REPOSITORY_H_
 
-#include <sqlite3.h>
-
 #include <memory>
 #include <string_view>
 
@@ -22,14 +20,23 @@ namespace file_explorer::entity {
 class Repository {
  public:
   explicit Repository(std::string_view file_path);
-  ~Repository() = default;
+  ~Repository();
+
+  Repository(Repository&& other);
+  Repository& operator=(Repository&& other);
+
+  Repository(const Repository&) = delete;
+  Repository& operator=(const Repository&) = delete;
+
+  int32_t GetStatus() const;
+
+  void SendStatement(std::string_view statement);
 
  private:
-  std::unique_ptr<sqlite3, decltype(&sqlite3_close)> m_db{nullptr,
-                                                          sqlite3_close};
-
-  int32_t m_db_status{SQLITE_NOTFOUND};
+  struct Impl;
+  std::unique_ptr<Impl> m_pimpl{nullptr};
 };
+
 }  // namespace file_explorer::entity
 
 #endif  // SRC_FILE_EXPLORER_ENTITY_REPOSITORY_H_
