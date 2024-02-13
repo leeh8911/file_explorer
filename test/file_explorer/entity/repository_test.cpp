@@ -22,6 +22,18 @@ TEST(RepositoryTest, SampleCase) {
   EXPECT_EQ(repository.GetStatus(), SQLITE_OK);
 }
 
+TEST(RepositoryTest, CreateTableTemplateCase) {
+  TableTemplate table("Cars");
+
+  table.AddColumn(ColumnTemplate("Id", "INT"));
+  table.AddColumn(ColumnTemplate("Name", "TEXT"));
+  table.AddColumn(ColumnTemplate("Price", "INT"));
+
+  EXPECT_EQ(table.GetColumnCount(), 3);
+  EXPECT_EQ(table.GetColumnName(0), "Id");
+  EXPECT_EQ(table.GetColumnName(1), "Name");
+  EXPECT_EQ(table.GetColumnName(2), "Price");
+}
 TEST(RepositoryTest, SampleUsecase) {
   // 메모리 상에 데이터베이스 생성
   // 데이터베이스 테이블 생성

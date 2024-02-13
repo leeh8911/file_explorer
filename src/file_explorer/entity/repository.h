@@ -17,6 +17,49 @@
 
 namespace file_explorer::entity {
 
+class ColumnTemplate {
+ public:
+  ColumnTemplate(std::string_view name_, std::string_view type_);
+  ~ColumnTemplate();
+
+  ColumnTemplate(ColumnTemplate&& other);
+  ColumnTemplate& operator=(ColumnTemplate&& other);
+
+  ColumnTemplate(const ColumnTemplate&);
+  ColumnTemplate& operator=(const ColumnTemplate&);
+
+  std::string_view GetName() const;
+  std::string_view GetType() const;
+
+ private:
+  struct Impl;
+  std::unique_ptr<Impl> m_pimpl{nullptr};
+};
+
+class TableTemplate {
+ public:
+  explicit TableTemplate(std::string_view name);
+  ~TableTemplate();
+
+  TableTemplate(TableTemplate&& other);
+  TableTemplate& operator=(TableTemplate&& other);
+
+  TableTemplate(const TableTemplate&);
+  TableTemplate& operator=(const TableTemplate&);
+
+  void AddColumn(const ColumnTemplate& column);
+  void DeleteColumn(std::string_view name);
+
+  size_t GetColumnCount() const;
+  std::string_view GetColumnName(size_t idx) const;
+  std::string_view GetColumnType(size_t idx) const;
+  std::string_view GetColumnType(std::string_view col_name) const;
+
+ private:
+  struct Impl;
+  std::unique_ptr<Impl> m_pimpl{nullptr};
+};
+
 class Repository {
  public:
   explicit Repository(std::string_view file_path);
