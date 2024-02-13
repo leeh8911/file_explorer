@@ -31,8 +31,8 @@ struct ColumnTemplate::Impl {
       : name(name_), type(type_) {}
 };
 
-ColumnTemplate::ColumnTemplate(std::string_view name_, std::string_view type_)
-    : m_pimpl(std::make_unique<Impl>(name_, type_)) {}
+ColumnTemplate::ColumnTemplate(std::string_view name, std::string_view type)
+    : m_pimpl(std::make_unique<Impl>(name, type)) {}
 
 ColumnTemplate::~ColumnTemplate() = default;
 
@@ -78,6 +78,8 @@ TableTemplate& TableTemplate::operator=(const TableTemplate& other) {
 
   return *this;
 }
+
+std::string_view TableTemplate::GetName() const { return m_pimpl->name; }
 
 void TableTemplate::AddColumn(const ColumnTemplate& column) {
   auto iter = std::find_if(m_pimpl->columns.begin(), m_pimpl->columns.end(),
@@ -132,7 +134,9 @@ struct Repository::Impl {
 
 Repository::Repository(std::string_view file_path)
     : m_pimpl(std::make_unique<Impl>()) {
-  m_pimpl->status = sqlite3_open(file_path.data(), &m_pimpl->db);
+  m_pimpl->status =
+      sqlite3_open_v2(file_path.data(), &m_pimpl->db,
+                      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 }
 
 Repository::~Repository() {
@@ -146,15 +150,28 @@ Repository& Repository::operator=(Repository&& other) = default;
 
 int32_t Repository::GetStatus() const { return m_pimpl->status; }
 
-void Repository::SendStatement(std::string_view statement) {
+Repository& Repository::CreateTable(const TableTemplate& table) {
+  std::string statement =
+      std::format("CREATE TABLE IF NOT EXISTS {} (", table.GetName());
+
+  for (size_t i = 0; i < table.GetColumnCount(); ++i) {
+    statement +=
+        std::format("{} {}", table.GetColumnName(i), table.GetColumnType(i));
+
+    if (i != table.GetColumnCount() - 1) {
+      statement += ", ";
+    }
+  }
+
+  statement += ");";
+
   char* err_msg = nullptr;
   m_pimpl->status =
       sqlite3_exec(m_pimpl->db, statement.data(), nullptr, nullptr, &err_msg);
 
-  if (m_pimpl->status != SQLITE_OK) {
-    std::cout << std::format("SQL error: {}", err_msg) << std::endl;
-
-    sqlite3_free(err_msg);
-  }
+  return *this;
 }
+
+Repository& Into(std::string_view table_name) { return *this; }
+Repository& Insert(std::vector<std::string_view> values) { return *this; }
 }  // namespace file_explorer::entity

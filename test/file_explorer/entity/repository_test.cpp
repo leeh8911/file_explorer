@@ -42,24 +42,46 @@ TEST(RepositoryTest, SampleUsecase) {
   // 데이터베이스 테이블에서 데이터 수정
   // 데이터베이스 테이블에서 데이터 다시 조회
 
-  Repository repository(":memory:");
+  Repository repository("test.db");
 
   EXPECT_EQ(repository.GetStatus(), SQLITE_OK);
 
   // 데이터베이스 테이블 생성
 
-  const char* sql =
-      "DROP TABLE IF EXISTS Cars;"
-      "CREATE TABLE Cars(Id INT, Name TEXT, Price INT);"
-      "INSERT INTO Cars VALUES(1, 'Audi', 52642);"
-      "INSERT INTO Cars VALUES(2, 'Mercedes', 57127);"
-      "INSERT INTO Cars VALUES(3, 'Skoda', 9000);"
-      "INSERT INTO Cars VALUES(4, 'Volvo', 29000);"
-      "INSERT INTO Cars VALUES(5, 'Bentley', 350000);"
-      "INSERT INTO Cars VALUES(6, 'Citroen', 21000);"
-      "INSERT INTO Cars VALUES(7, 'Hummer', 41400);"
-      "INSERT INTO Cars VALUES(8, 'Volkswagen', 21600);";
-  repository.SendStatement(sql);
+  {
+    TableTemplate table("Cars");
+
+    table.AddColumn(ColumnTemplate("Id", "INT"));
+    table.AddColumn(ColumnTemplate("Name", "TEXT"));
+    table.AddColumn(ColumnTemplate("Price", "INT"));
+
+    repository.CreateTable(table);
+  }
+
+  {
+    repository.Insert({"1", "Audi", "52642"}).Into("Cars");
+    repository.Insert({"2", "Mercedes", "57127"}).Into("Cars");
+    repository.Insert({"3", "Skoda", "9000"}).Into("Cars");
+    repository.Insert({"4", "Volvo", "29000"}).Into("Cars");
+    repository.Insert({"5", "Bentley", "350000"}).Into("Cars");
+    repository.Insert({"6", "Citroen", "21000"}).Into("Cars");
+    repository.Insert({"7", "Hummer", "41400"}).Into("Cars");
+    repository.Insert({"8", "Volkswagen", "21600"}).Into("Cars");
+  }
+
+  {
+    repository.From("Cars").Select("Name").Where("Price > 30000").Execute();
+
+    std::vector<std::string> result;
+    while (repository.Next()) {
+      result.push_back(repository.GetString(0));
+    }
+
+    EXPECT_EQ(result.size(), 3);
+    EXPECT_EQ(result[0], "Audi");
+    EXPECT_EQ(result[1], "Mercedes");
+    EXPECT_EQ(result[2], "Bentley");
+  }
 }
 
 }  // namespace file_explorer::entity::test

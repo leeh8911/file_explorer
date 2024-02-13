@@ -19,7 +19,7 @@ namespace file_explorer::entity {
 
 class ColumnTemplate {
  public:
-  ColumnTemplate(std::string_view name_, std::string_view type_);
+  ColumnTemplate(std::string_view name, std::string_view type);
   ~ColumnTemplate();
 
   ColumnTemplate(ColumnTemplate&& other);
@@ -47,6 +47,8 @@ class TableTemplate {
   TableTemplate(const TableTemplate&);
   TableTemplate& operator=(const TableTemplate&);
 
+  std::string_view GetName() const;
+
   void AddColumn(const ColumnTemplate& column);
   void DeleteColumn(std::string_view name);
 
@@ -62,6 +64,10 @@ class TableTemplate {
 
 class Repository {
  public:
+  enum class Status {
+    Begin = 0,
+    Commit,
+  };
   explicit Repository(std::string_view file_path);
   ~Repository();
 
@@ -73,7 +79,10 @@ class Repository {
 
   int32_t GetStatus() const;
 
-  void SendStatement(std::string_view statement);
+  Repository& CreateTable(const TableTemplate& table);
+
+  Repository& Into(std::string_view table_name);
+  Repository& Insert(std::vector<std::string_view> values);
 
  private:
   struct Impl;
