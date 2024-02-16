@@ -16,7 +16,6 @@
 #include <set>
 #include <string>
 
-
 namespace file_explorer::entity::filesystem {
 class FileInterface;
 using FileInterfacePtr = std::shared_ptr<FileInterface>;
@@ -35,6 +34,7 @@ class FileInterface {
 
   const std::string& GetName() const;
   FileInterfacePtr GetParent() const;
+  std::string GetPath(const std::string& delimiter = "/") const;
 
  private:
   std::string m_name{};

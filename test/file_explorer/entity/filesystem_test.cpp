@@ -13,7 +13,7 @@
 
 #include <gtest/gtest.h>
 
-namespace file_explorer::entity::filesystem {
+namespace file_explorer::entity::filesystem::test {
 
 TEST(FileSystemTest, SampleCase) {
   auto file_a_1 = std::make_shared<File>("file_a_1.txt");
@@ -51,4 +51,4 @@ TEST(FileSystemTest, SampleCase) {
     EXPECT_EQ(result[0]->GetName(), "file_a_1.txt");
   }
 }
-}  // namespace file_explorer::entity::filesystem
+}  // namespace file_explorer::entity::filesystem::test

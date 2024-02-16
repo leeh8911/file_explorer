@@ -20,6 +20,14 @@ const std::string& FileInterface::GetName() const { return m_name; }
 
 FileInterfacePtr FileInterface::GetParent() const { return m_parent; }
 
+std::string FileInterface::GetPath(const std::string& delimiter) const {
+  if (m_parent == nullptr) {
+    static std::string home = "~/";
+    return home + m_name;
+  }
+  return m_parent->GetPath() + delimiter + m_name;
+}
+
 bool FileSystemPtrComparator::operator()(FileInterfacePtr lhs,
                                          FileInterfacePtr rhs) const {
   return lhs->GetName() < rhs->GetName();
