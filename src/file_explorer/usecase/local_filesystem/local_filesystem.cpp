@@ -30,7 +30,13 @@ entity::filesystem::FileInterfacePtr LocalFileSystem::GetRoot() const {
 
 void LocalFileSystem::Indexing() {
   // Start from home directory
-  std::string home = std::filesystem::path(getenv("HOME")).string();
+  std::string home = std::filesystem::path("/").string();
+
+  std::filesystem::directory_iterator it(home);
+
+  for (const auto& entry : it) {
+    std::cout << entry.path() << std::endl;
+  }
 
   std::cout << "Home directory: " << home << std::endl;
 }
