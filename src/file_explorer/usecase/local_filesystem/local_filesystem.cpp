@@ -13,6 +13,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <stack>
 #include <string>
 
 #include "file_explorer/entity/filesystem/filesystem.h"
@@ -29,16 +30,36 @@ entity::filesystem::FileInterfacePtr LocalFileSystem::GetRoot() const {
 }
 
 void LocalFileSystem::Indexing() {
+  using fs = std::filesystem;
+
   // Start from home directory
-  std::string home = std::filesystem::path("/").string();
+  auto home = fs::path("/");
 
-  std::filesystem::directory_iterator it(home);
+  // Create root folder
+  m_root = std::make_shared<entity::filesystem::Folder>(home.string());
 
-  for (const auto& entry : it) {
-    std::cout << entry.path() << std::endl;
+  // Create stack for DFS
+  std::stack<fs::path> stack;
+
+  // Push home directory to stack
+  stack.push(home);
+
+  // DFS
+  while (!stack.empty()) {
+    auto current = stack.top();
+    stack.pop();
+
+    // Create file or folder
+    auto file = std::make_shared<entity::filesystem::File>(current.string());
+    m_root->Add(file);
+
+    // If current is directory, push all children to stack
+    if (fs::is_directory(current)) {
+      for (const auto& entry : fs::directory_iterator(current)) {
+        stack.push(entry.path());
+      }
+    }
   }
-
-  std::cout << "Home directory: " << home << std::endl;
 }
 
 }  // namespace file_explorer::usecase::local_filesystem
