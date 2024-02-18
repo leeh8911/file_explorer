@@ -91,5 +91,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "stack": "cpp"
-    }
+    },
+    "markdown-preview-enhanced.plantumlJarPath": "/Users/isang-won/Desktop/develop/3rdparty/plantuml/plantuml.jar",
+    "terminal.integrated.fontSize": 15
 }
