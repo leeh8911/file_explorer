@@ -92,6 +92,11 @@
         "span": "cpp",
         "stack": "cpp"
     },
+<<<<<<< HEAD
     "plantuml.jar": "D:/dev/plantuml-1.2024.3/plantuml.jar",
     "markdown-preview-enhanced.plantumlJarPath": "D:/dev/plantuml-1.2024.3/plantuml.jar"
+=======
+    "markdown-preview-enhanced.plantumlJarPath": "/Users/isang-won/Desktop/develop/3rdparty/plantuml/plantuml.jar",
+    "terminal.integrated.fontSize": 15
+>>>>>>> 5518a712e534ea0df3916d9b40ddfcfc78376ce3
 }
