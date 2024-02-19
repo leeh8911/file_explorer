@@ -91,5 +91,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "stack": "cpp"
-    }
+    },
+    "plantuml.jar": "D:/dev/plantuml-1.2024.3/plantuml.jar",
+    "markdown-preview-enhanced.plantumlJarPath": "D:/dev/plantuml-1.2024.3/plantuml.jar"
 }
