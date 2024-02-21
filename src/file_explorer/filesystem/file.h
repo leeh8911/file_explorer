@@ -16,13 +16,23 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "file_explorer/core/core.h"
 
+
 namespace file_explorer::domain::filesystem {
 class IFile;
 using IFilePtr = std::shared_ptr<IFile>;
+
+class IFileHasher {
+ public:
+  size_t operator()(const IFilePtr& file) const;
+};
+using IFileSet = std::unordered_set<IFilePtr, IFileHasher>;
+using IFileMap = std::unordered_map<std::string, IFilePtr>;
 using IFileList = std::vector<IFilePtr>;
 
 class IFile {
@@ -31,18 +41,64 @@ class IFile {
 
   virtual ~IFile() = default;
 
-  virtual std::string_view Name() const = 0;
-  virtual std::string& Name() = 0;
+  IFile(std::string name, IFilePtr parent, core::TimePoint last_modified_time);
 
-  virtual std::string_view Path() const = 0;
+  virtual std::string_view Name() const;
+  virtual std::string& Name();
+
+  virtual IFilePtr Parent() const;
+  virtual IFilePtr Parent();
+
+  virtual std::string Path() const;
 
   virtual bool IsFile() const = 0;
 
   virtual size_t Size() const = 0;
-  virtual core::TimePoint LastModifiedTime() const = 0;
+  virtual const core::TimePoint& LastModifiedTime() const;
+  virtual core::TimePoint& LastModifiedTime();
+  virtual std::string LastModifiedTimeString() const;
+
+ private:
+  std::string m_name{};
+  IFilePtr m_parent{nullptr};
+  core::TimePoint m_last_modified_time{};
 };
-class File : public IFile {};
-class Folder : public IFile {};
+
+class File : public IFile {
+ public:
+  File(std::string name, std::string extension, IFilePtr parent,
+       core::TimePoint last_modified_time, size_t size);
+
+  bool IsFile() const override;
+
+  size_t Size() const override;
+
+  std::string FullName() const;
+
+  std::string_view Extension() const;
+  std::string& Extension();
+
+ private:
+  size_t m_size{};
+  std::string m_extension{};
+};
+
+class Folder : public IFile {
+ public:
+  Folder(std::string name, IFilePtr parent, core::TimePoint last_modified_time);
+
+  bool IsFile() const override;
+
+  size_t Size() const override;
+
+  const IFileList& Children() const;
+  IFileList& Children();
+
+  void AddChild(IFilePtr child);
+
+ private:
+  IFileList m_children{};
+};
 
 }  // namespace file_explorer::domain::filesystem
 

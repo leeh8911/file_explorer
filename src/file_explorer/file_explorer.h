@@ -12,7 +12,8 @@
 #ifndef SRC_FILE_EXPLORER_FILE_EXPLORER_H_
 #define SRC_FILE_EXPLORER_FILE_EXPLORER_H_
 
-#include "file_explorer/model/worker.h"
+#include "file_explorer/core/core.h"
+#include "file_explorer/filesystem/file.h"
 
 namespace file_explorer {}
 
