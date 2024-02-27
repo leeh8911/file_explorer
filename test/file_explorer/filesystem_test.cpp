@@ -11,6 +11,8 @@
 
 #include <gtest/gtest.h>
 
+#include <set>
+
 #include "file_explorer/filesystem/file.h"
 #include "file_explorer/filesystem/local.h"
 
@@ -33,5 +35,23 @@ TEST(FileSystemTest, LocalFileSampleCase) {
 
   EXPECT_EQ(file->Name(), "README");
   EXPECT_EQ(file->Extension(), ".md");
+}
+TEST(FileSystemTest, LocalFileRecursiveFindCase) {
+  LocalFilesystem fs;
+  auto result = fs.ReadLocalFilesystem("D:/");
+
+  EXPECT_EQ(result->Name(), "D:");
+  EXPECT_EQ(result->IsFile(), false);
+
+  auto folder = std::dynamic_pointer_cast<Folder>(result);
+  auto children = folder->Children();
+
+  std::set<std::string> names;
+
+  for (const auto& child : children) {
+    names.insert(child->Name());
+  }
+
+  EXPECT_TRUE(names.contains("sangwon"));
 }
 }  // namespace file_explorer::domain::filesystem::test

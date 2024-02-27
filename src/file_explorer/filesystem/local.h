@@ -12,8 +12,6 @@
 #ifndef SRC_FILE_EXPLORER_FILESYSTEM_LOCAL_H_
 #define SRC_FILE_EXPLORER_FILESYSTEM_LOCAL_H_
 
-#include <filesystem>
-
 #include "file_explorer/filesystem/file.h"
 
 namespace file_explorer::domain::filesystem {
@@ -22,6 +20,9 @@ class LocalFilesystem {
   LocalFilesystem() = default;
 
   IFilePtr ReadLocalFilesystem(const std::string& path) const;
+
+ private:
+  void RecursiveFind(IFilePtr root, const std::string& path) const;
 };
 }  // namespace file_explorer::domain::filesystem
 
